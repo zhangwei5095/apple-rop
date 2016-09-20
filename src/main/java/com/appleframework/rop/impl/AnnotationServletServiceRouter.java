@@ -16,6 +16,7 @@ import com.appleframework.rop.request.UploadFileConverter;
 import com.appleframework.rop.response.ErrorResponse;
 import com.appleframework.rop.response.RejectedServiceResponse;
 import com.appleframework.rop.response.ServiceUnavailableErrorResponse;
+import com.appleframework.rop.response.ServiceUnavailableErrorYYYResponse;
 import com.appleframework.rop.response.TimeoutErrorResponse;
 import com.appleframework.rop.security.*;
 import com.appleframework.rop.security.SecurityManager;
@@ -77,6 +78,10 @@ public class AnnotationServletServiceRouter implements ServiceRouter {
     private List<RopEventListener> listeners = new ArrayList<RopEventListener>();
 
     private boolean signEnable = true;
+    
+    private boolean debugEnable = true;
+    
+    private boolean monitorEnable = true;
 
     private ApplicationContext applicationContext;
 
@@ -254,7 +259,20 @@ public class AnnotationServletServiceRouter implements ServiceRouter {
         }
         this.signEnable = signEnable;
     }
+    
+    public void setDebugEnable(boolean debugEnable) {
+        if (!debugEnable && logger.isWarnEnabled()) {
+            logger.warn("rop close request debug mode");
+        }
+        this.debugEnable = debugEnable;
+    }
 
+    public void setMonitorEnable(boolean monitorEnable) {
+        if (!monitorEnable && logger.isWarnEnabled()) {
+            logger.warn("rop close request monitor mode");
+        }
+        this.monitorEnable = monitorEnable;
+    }
 
     public void setThreadFerryClass(Class<? extends ThreadFerry> threadFerryClass) {
         if (logger.isDebugEnabled()) {
@@ -429,8 +447,7 @@ public class AnnotationServletServiceRouter implements ServiceRouter {
             RopRequest ropRequest = null;
             try {
                 //用系统级参数构造一个RequestContext实例（第一阶段绑定）
-                ropRequestContext = requestContextBuilder.buildBySysParams(
-                        ropContext, servletRequest, servletResponse);
+                ropRequestContext = requestContextBuilder.buildBySysParams(ropContext, servletRequest, servletResponse);
 
                 //验证系统级参数的合法性
                 MainError mainError = securityManager.validateSystemParameters(ropRequestContext);
@@ -510,6 +527,8 @@ public class AnnotationServletServiceRouter implements ServiceRouter {
     private RopContext buildRopContext() {
         DefaultRopContext defaultRopContext = new DefaultRopContext(this.applicationContext);
         defaultRopContext.setSignEnable(this.signEnable);
+        defaultRopContext.setDebugEnable(this.debugEnable);
+        defaultRopContext.setMonitorEnable(this.monitorEnable);
         defaultRopContext.setSessionManager(sessionManager);
         return defaultRopContext;
     }
@@ -660,9 +679,14 @@ public class AnnotationServletServiceRouter implements ServiceRouter {
             } catch (Exception e) { //出错则招聘服务不可用的异常
                 if (logger.isInfoEnabled()) {
                     logger.info("调用" + context.getMethod() + "时发生异常，异常信息为：" + e.getMessage());
-                    e.printStackTrace();
                 }
-                ropResponse = new ServiceUnavailableErrorResponse(context.getMethod(), context.getLocale(), e);
+                if(context.isDeubgEnable()) {
+                	ropResponse = new ServiceUnavailableErrorResponse(context.getMethod(), context.getLocale(), e);
+                }
+                else {
+                	ropResponse = new ServiceUnavailableErrorYYYResponse(context.getMethod(), context.getLocale());
+                }
+                
             }
         }
         return ropResponse;
@@ -726,7 +750,15 @@ public class AnnotationServletServiceRouter implements ServiceRouter {
         return signEnable;
     }
 
-    public ApplicationContext getApplicationContext() {
+    public boolean isDebugEnable() {
+		return debugEnable;
+	}
+
+	public boolean isMonitorEnable() {
+		return monitorEnable;
+	}
+
+	public ApplicationContext getApplicationContext() {
         return applicationContext;
     }
 

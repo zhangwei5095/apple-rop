@@ -182,6 +182,11 @@ public class SimpleRopRequestContext implements RopRequestContext {
     }
     
     @Override
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	@Override
     public Locale getLocale() {
         return this.locale;
     }
@@ -279,6 +284,11 @@ public class SimpleRopRequestContext implements RopRequestContext {
     }
 
     @Override
+	public boolean isDeubgEnable() {
+		return ropContext.isDebugEnable();
+	}
+
+	@Override
     public ServiceMethodDefinition getServiceMethodDefinition() {
         return serviceMethodHandler.getServiceMethodDefinition();
     }

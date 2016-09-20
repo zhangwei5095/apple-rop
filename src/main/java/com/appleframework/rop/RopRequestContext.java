@@ -68,6 +68,13 @@ public interface RopRequestContext {
      * @param session
      */
     void addSession(String sessionId, Session session);
+    
+    /**
+     * 直接绑定会话
+     *
+     * @param session
+     */
+    void setSession(Session session);
 
     /**
      * 删除会话，删除{@link #getSessionId()}对应的Session
@@ -212,6 +219,13 @@ public interface RopRequestContext {
      * @return
      */
     boolean isSignEnable();
+    
+    /**
+     * 该方法是否开启调试的功能
+     *
+     * @return
+     */
+    boolean isDeubgEnable();
 
     /**
      * 获取请求参数列表

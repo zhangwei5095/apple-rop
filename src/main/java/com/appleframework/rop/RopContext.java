@@ -75,6 +75,20 @@ public interface RopContext {
      * @return
      */
     boolean isSignEnable();
+    
+    /**
+     * 是开启调试功能
+     *
+     * @return
+     */
+    boolean isDebugEnable();
+    
+    /**
+     * 是开启监控功能
+     *
+     * @return
+     */
+    boolean isMonitorEnable();
 
     /**
      * 获取会话管理器

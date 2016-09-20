@@ -81,6 +81,12 @@ public class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParse
 
         //设置signEnable
         setSignEnable(element, serviceRouterDef);
+        
+        //设置debugEnable
+        setDebugEnable(element, serviceRouterDef);
+        
+        //设置monitorEnable
+        setMonitorEnable(element, serviceRouterDef);
 
         //设置threadFerryClass
         setThreadFerry(element, serviceRouterDef);
@@ -168,6 +174,26 @@ public class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParse
                 logger.debug("Rop配置请求数据签名开关为{}",signEnable);
             }
             serviceRouterDef.getPropertyValues().addPropertyValue("signEnable", signEnable);
+        }
+    }
+    
+    private void setDebugEnable(Element element, RootBeanDefinition serviceRouterDef) {
+        String debugEnable = element.getAttribute("debug-enable");
+        if (StringUtils.hasText(debugEnable)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Rop配置请求数据调试模式开关为{}",debugEnable);
+            }
+            serviceRouterDef.getPropertyValues().addPropertyValue("debugEnable", debugEnable);
+        }
+    }
+    
+    private void setMonitorEnable(Element element, RootBeanDefinition serviceRouterDef) {
+        String monitorEnable = element.getAttribute("monitor-enable");
+        if (StringUtils.hasText(monitorEnable)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Rop配置请求接口性能监控开关为{}",monitorEnable);
+            }
+            serviceRouterDef.getPropertyValues().addPropertyValue("monitorEnable", monitorEnable);
         }
     }
 
